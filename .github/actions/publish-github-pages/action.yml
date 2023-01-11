@@ -5,10 +5,12 @@ description: "Generate Epythet documentation and push to github pages branch"
 inputs:
   docs-branch:
     description: "branch to push documentation build"
+    required: false
     default: "docs"
 
   python-version:
     description: "Python version used to generate documentation"
+    required: false
     default: "3.10"
 
 runs:
