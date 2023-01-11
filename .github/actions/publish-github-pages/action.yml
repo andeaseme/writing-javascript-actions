@@ -24,7 +24,6 @@ runs:
       run: |
         git pull
         git checkout $(git rev-parse --verify --quiet "${{ inputs.docs-branch }}" || echo '-b "${{ inputs.docs-branch }}"')
-        git push --set-upstream origin "${{ inputs.docs-branch }}"
       shell: bash
 
     - name: Set up Python ${{ inputs.python-version }}
