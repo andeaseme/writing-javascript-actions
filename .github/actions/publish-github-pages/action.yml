@@ -3,8 +3,12 @@ name: "publish github pages"
 description: "Generate Epythet documentation and push to github pages branch"
 
 inputs:
+  project-name:
+    description: "Name of python project"
+    required: true
+
   docs-branch:
-    description: "branch to push documentation build"
+    description: "Branch to push documentation build"
     required: false
     default: "docs"
 
@@ -52,7 +56,7 @@ runs:
     - name: Package
       run: |
         python setup.py sdist
-        echo "PKG_PATH=dist/$PROJECT_NAME-$VERSION.tar.gz" >> $GITHUB_ENV
+        echo "PKG_PATH=dist/${{ inputs.project-name }}-$VERSION.tar.gz" >> $GITHUB_ENV
       shell: bash
 
     - name: Generate Documentation
