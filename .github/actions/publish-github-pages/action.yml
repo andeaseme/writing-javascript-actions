@@ -71,14 +71,6 @@ runs:
       run: pack check-in "**CI** Formatted code + Updated version number and documentation. [skip ci]" --auto-choose-default-action --bypass-docstring-validation --bypass-tests --bypass-code-formatting --verbose
       shell: bash
 
-    - name: Push Changes to master
-      run: |
-        git checkout master
-        git merge "${{ inputs.docs-branch }}"
-        rm -rf docs
-        pack check-in "**CI** Formatted code + Updated version number and documentation. [skip ci]" --auto-choose-default-action --bypass-docstring-validation --bypass-tests --bypass-code-formatting --verbose
-      shell: bash
-
     - name: Tag Repository
       run: isee tag-repo $VERSION
       shell: bash
