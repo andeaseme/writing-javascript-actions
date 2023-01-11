@@ -1,0 +1,67 @@
+name: "publish github pages"
+
+description: "Generate Epythet documentation and push to github pages branch"
+
+inputs:
+  docs-branch:
+    description: "branch to push documentation build"
+    default: "docs"
+
+  python-version:
+    description: "Python version used to generate documentation"
+    default: "3.10"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Create or checkout docs branch
+      run: |
+        git pull
+        git checkout $(git rev-parse --verify --quiet "${{ inputs.docs-branch }}" || echo '-b "${{ inputs.docs-branch }}"')
+        git push --set-upstream origin "${{ inputs.docs-branch }}"
+
+    - name: Set up Python ${{ inputs.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip -q install semver axblack twine wads isee
+        isee install-requires
+    - name: Format source code
+      run: black  --line-length=88 .
+
+    - name: Update version number
+      run: |
+        export VERSION=$(isee gen-semver)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        isee update-setup-cfg
+    - name: Package
+      run: |
+        python setup.py sdist
+        echo "PKG_PATH=dist/$PROJECT_NAME-$VERSION.tar.gz" >> $GITHUB_ENV
+    - name: Generate Documentation
+      run: |
+        pip install $PKG_PATH
+        isee generate-documentation
+    - name: Publish
+      run: |
+        epythet make . github
+
+    - name: Push Changes to docs branch
+      run: pack check-in "**CI** Formatted code + Updated version number and documentation. [skip ci]" --auto-choose-default-action --bypass-docstring-validation --bypass-tests --bypass-code-formatting --verbose
+
+    - name: Push Changes to master
+      run: |
+        git checkout master
+        git merge "${{ inputs.docs-branch }}"
+        rm -rf docs
+        pack check-in "**CI** Formatted code + Updated version number and documentation. [skip ci]" --auto-choose-default-action --bypass-docstring-validation --bypass-tests --bypass-code-formatting --verbose
+    - name: Tag Repository
+      run: isee tag-repo $VERSION
