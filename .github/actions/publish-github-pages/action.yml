@@ -10,7 +10,12 @@ inputs:
   docs-branch:
     description: "Branch to push documentation build"
     required: false
-    default: "docs"
+    default: "gh-pages"
+
+  docs-dir:
+    description: "Location of docs"
+    required: false
+    default: "./docs"
 
   python-version:
     description: "Python version used to generate documentation"
@@ -70,13 +75,10 @@ runs:
         epythet make . github
       shell: bash
 
-    - name: Push Changes to docs branch
-      run: |
-        git ls-remote --exit-code --heads origin "${{ inputs.docs-branch }}" && git add -A
-        git push -u origin "${{ inputs.docs-branch }}"
-        pack check-in "**CI** Formatted code + Updated version number and documentation. [skip ci]" --auto-choose-default-action --bypass-docstring-validation --bypass-tests --bypass-code-formatting --verbose
-      shell: bash
-
-    - name: Tag Repository
-      run: isee tag-repo $VERSION
-      shell: bash
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3.9.1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: ${{ inputs.docs-branch }}
+        publish_dir: ${{ inputs.docs-dir }}
+        enable_jekyll: true
