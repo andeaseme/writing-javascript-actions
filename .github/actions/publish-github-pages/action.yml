@@ -19,7 +19,7 @@ inputs:
   docs-dir:
     description: "Location of docs"
     required: false
-    default: "./docs"
+    default: "./docsrc/_build/html/"
 
   python-version:
     description: "Python version used to generate documentation"
@@ -33,53 +33,22 @@ runs:
       with:
         fetch-depth: 0
 
-    - name: Create or checkout docs branch
-      run: |
-        git pull
-        git checkout $(git rev-parse --verify --quiet "${{ inputs.docs-branch }}" || echo '-b "${{ inputs.docs-branch }}"')
-      shell: bash
-
     - name: Set up Python ${{ inputs.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ inputs.python-version }}
 
-    - name: Install dependencies
+    - name: Install Epythet
       run: |
         python -m pip install --upgrade pip
-        pip -q install semver axblack twine wads isee
-        isee install-requires
-      shell: bash
-
-    - name: Format source code
-      run: black  --line-length=88 .
-      shell: bash
-
-    - name: Update version number
-      run: |
-        export VERSION=$(isee gen-semver)
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-        isee update-setup-cfg
-      shell: bash
-
-    - name: Package
-      run: |
-        python setup.py sdist
-        echo "PKG_PATH=dist/${{ inputs.project-name }}-$VERSION.tar.gz" >> $GITHUB_ENV
+        pip -q install epythet
       shell: bash
 
     - name: Generate Documentation
-      run: |
-        pip install $PKG_PATH
-        isee generate-documentation
+      run: epythet quickstart
       shell: bash
 
-    - name: Publish
-      run: |
-        epythet make . github
-      shell: bash
-
-    - name: Deploy
+    - name: Deploy GitHub Pages
       uses: peaceiris/actions-gh-pages@v3.9.1
       with:
         github_token: ${{ inputs.github-token }}
