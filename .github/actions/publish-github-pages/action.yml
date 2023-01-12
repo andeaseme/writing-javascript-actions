@@ -71,7 +71,9 @@ runs:
       shell: bash
 
     - name: Push Changes to docs branch
-      run: pack check-in "**CI** Formatted code + Updated version number and documentation. [skip ci]" --auto-choose-default-action --bypass-docstring-validation --bypass-tests --bypass-code-formatting --verbose
+      run: |
+        git push --set-upstream origin docs_branch
+        pack check-in "**CI** Formatted code + Updated version number and documentation. [skip ci]" --auto-choose-default-action --bypass-docstring-validation --bypass-tests --bypass-code-formatting --verbose
       shell: bash
 
     - name: Tag Repository
