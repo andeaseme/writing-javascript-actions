@@ -45,7 +45,7 @@ runs:
       shell: bash
 
     - name: Generate Documentation
-      run: epythet quickstart
+      run: epythet quickstart .
       shell: bash
 
     - name: Deploy GitHub Pages
