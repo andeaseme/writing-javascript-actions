@@ -7,6 +7,10 @@ inputs:
     description: "Name of python project"
     required: true
 
+  github-token:
+    description: GITHUB_TOKEN
+    required: true
+
   docs-branch:
     description: "Branch to push documentation build"
     required: false
@@ -78,7 +82,7 @@ runs:
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3.9.1
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ inputs.github-token }}
         publish_branch: ${{ inputs.docs-branch }}
         publish_dir: ${{ inputs.docs-dir }}
         enable_jekyll: true
