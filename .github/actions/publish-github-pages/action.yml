@@ -14,7 +14,7 @@ inputs:
   docs-branch:
     description: "Branch to push documentation build"
     required: false
-    default: "gh-pages"
+    default: "docs"
 
   docs-dir:
     description: "Location of docs"
