@@ -72,7 +72,8 @@ runs:
 
     - name: Push Changes to docs branch
       run: |
-        git ls-remote --exit-code --heads origin "${{ inputs.docs-branch }}" && git add -A || git push -u origin "${{ inputs.docs-branch }}"
+        git ls-remote --exit-code --heads origin "${{ inputs.docs-branch }}" && git add -A
+        git push -u origin "${{ inputs.docs-branch }}"
         pack check-in "**CI** Formatted code + Updated version number and documentation. [skip ci]" --auto-choose-default-action --bypass-docstring-validation --bypass-tests --bypass-code-formatting --verbose
       shell: bash
 
